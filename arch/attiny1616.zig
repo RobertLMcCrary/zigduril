@@ -5,6 +5,37 @@ const F_CPU = 10000000;
 const BOGOMIPS = F_CPU / 4350;
 const DELAY_ZERO_TIME = 1020;
 
+// Clock divider enum
+pub const ClockDiv = enum(u8) {
+    clock_div_1 = 0x00, // 10 MHz
+    clock_div_2 = 0x01, // 5 MHz
+    clock_div_4 = 0x02, // 2.5 MHz
+    clock_div_8 = 0x03, // 1.25 MHz
+    clock_div_16 = 0x04, // 625 kHz
+    clock_div_32 = 0x05, // 312 kHz
+    clock_div_64 = 0x06, // 312 kHz
+    clock_div_128 = 0x07, // 312 kHz
+    clock_div_256 = 0x08, // 312 kHz
+};
+
+// DAC controls
+pub var DAC_LVL: u8 = undefined; // Maps to DAC0.DATA
+pub var DAC_VREF: u8 = undefined; // Maps to VREF.CTRLA
+
+// Vref voltage constants
+pub const V05: u8 = 0x00;
+pub const V055: u8 = 0x00;
+pub const V11: u8 = 0x01;
+pub const V15: u8 = 0x02;
+pub const V25: u8 = 0x03;
+pub const V43: u8 = 0x04;
+
+// DAC Vref setting function
+pub fn mcu_set_dac_vref(x: u8) void {}
+
+// ADC Vref setting function
+pub fn mcu_set_adc0_vref(x: u8) void {}
+
 pub fn mcu_clock_speed() void {}
 
 //clock dividers
