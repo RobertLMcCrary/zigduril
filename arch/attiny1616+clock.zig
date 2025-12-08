@@ -38,3 +38,6 @@ pub const Divider = enum(u8) {
     clock_div_128 = CLKCTRL_PrescaleDivider_64X_gc | CLKCTRL_PrescaleEnable_bitmask, // 312 kHz
     clock_div_256 = CLKCTRL_PrescaleDivider_64X_gc | CLKCTRL_PrescaleEnable_bitmask, // 312 kHz
 };
+
+//clock dividers
+pub fn clock_prescale_set(n: u8) void {}

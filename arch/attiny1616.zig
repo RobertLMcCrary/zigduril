@@ -16,9 +16,6 @@ pub fn mcu_set_adc0_vref(x: u8) void {}
 
 pub fn mcu_clock_speed() void {}
 
-//clock dividers
-pub fn clock_prescale_set(n: u8) void {}
-
 //ADC voltage / temperature
 pub fn mcu_set_admux_therm() void {}
 
