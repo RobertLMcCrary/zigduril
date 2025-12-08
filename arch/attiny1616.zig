@@ -5,17 +5,26 @@ const F_CPU = 10000000;
 const BOGOMIPS = F_CPU / 4350;
 const DELAY_ZERO_TIME = 1020;
 
-// Clock divider enum
+// PDIV constants (bits 4:1 of MCLKCTRLB)
+pub const CLKCTRL_PDIV_2X_gc: u8 = 0x0 << 1;
+pub const CLKCTRL_PDIV_4X_gc: u8 = 0x1 << 1;
+pub const CLKCTRL_PDIV_8X_gc: u8 = 0x2 << 1;
+pub const CLKCTRL_PDIV_16X_gc: u8 = 0x3 << 1;
+pub const CLKCTRL_PDIV_32X_gc: u8 = 0x4 << 1;
+pub const CLKCTRL_PDIV_64X_gc: u8 = 0x5 << 1;
+pub const CLKCTRL_PEN_bm: u8 = 0x1; // Bit 0 - Prescaler Enable
+
+// Clock divider enum using named constants
 pub const ClockDiv = enum(u8) {
-    clock_div_1 = 0x00, // 10 MHz
-    clock_div_2 = 0x01, // 5 MHz
-    clock_div_4 = 0x02, // 2.5 MHz
-    clock_div_8 = 0x03, // 1.25 MHz
-    clock_div_16 = 0x04, // 625 kHz
-    clock_div_32 = 0x05, // 312 kHz
-    clock_div_64 = 0x06, // 312 kHz
-    clock_div_128 = 0x07, // 312 kHz
-    clock_div_256 = 0x08, // 312 kHz
+    clock_div_1 = CLKCTRL_PDIV_2X_gc | CLKCTRL_PEN_bm, // 10 MHz
+    clock_div_2 = CLKCTRL_PDIV_4X_gc | CLKCTRL_PEN_bm, // 5 MHz
+    clock_div_4 = CLKCTRL_PDIV_8X_gc | CLKCTRL_PEN_bm, // 2.5 MHz
+    clock_div_8 = CLKCTRL_PDIV_16X_gc | CLKCTRL_PEN_bm, // 1.25 MHz
+    clock_div_16 = CLKCTRL_PDIV_32X_gc | CLKCTRL_PEN_bm, // 625 kHz
+    clock_div_32 = CLKCTRL_PDIV_64X_gc | CLKCTRL_PEN_bm, // 312 kHz
+    clock_div_64 = CLKCTRL_PDIV_64X_gc | CLKCTRL_PEN_bm, // 312 kHz
+    clock_div_128 = CLKCTRL_PDIV_64X_gc | CLKCTRL_PEN_bm, // 312 kHz
+    clock_div_256 = CLKCTRL_PDIV_64X_gc | CLKCTRL_PEN_bm, // 312 kHz
 };
 
 // DAC controls
