@@ -73,14 +73,30 @@ pub const WCMP_BITMASK: u8 = (1 << 1); // Window Comparator Flag
 
 pub fn sleep_mode() void {}
 
-pub fn start_measurement() void {}
+pub fn start_measurement() void {
+    AnalogToDigital.INTCTRL |= RESRDY_BITMASK; // enable interrupt
+    AnalogToDigital.COMMAND |= STCONV_BITMASK; // actually start measuring
+}
 
-pub fn off() void {}
+pub fn off() void {
+    AnalogToDigital.CTRLA &= ~(ENABLE_BITMASK);
+}
 
-pub fn vect_clear() void {}
+pub fn vect_clear() void {
+    AnalogToDigital.INTFLAGS &= RESRDY_BITMASK;
+}
 
-pub fn result_temp() u16 {}
+pub fn result_temp() u16 {
+    // just return left-aligned ADC result, don't convert to calibrated units
+    return AnalogToDigital.RES << 4;
+}
 
-pub fn result_volts() u16 {}
+pub fn result_volts() u16 {
+    // ADC has no left-aligned mode, so left-align it manually
+    return AnalogToDigital.RES << 4;
+}
 
-pub fn lsb() u8 {}
+pub fn lsb() u8 {
+    //return (ADCL >> 6) + (ADCH << 2);
+    return AnalogToDigital.RESL; // right aligned, not left... so should be equivalent?
+}
