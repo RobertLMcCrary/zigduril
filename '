@@ -1,6 +1,0 @@
-const std = @import("std");
-const zigduril = @import("zigduril");
-
-pub fn main() !void {
-    std.debug.print("Hello {s}\n", .{"world"});
-}
