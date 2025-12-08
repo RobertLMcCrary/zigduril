@@ -20,10 +20,6 @@
 pub var DAC_LVL: u8 = undefined; // Maps to DAC0.DATA
 pub var DAC_VREF: u8 = undefined; // Maps to VREF.CTRLA
 
-// Bit masks for the fields inside VREF.CTRLA
-const DAC0REFSEL_MASK: u8 = 0b0000_0111; // bits 2:0  (DAC ref select)
-const ADC0REFSEL_MASK: u8 = 0b0111_0000; // bits 6:4  (ADC ref select)
-
 // VREF constants (DAC reference voltage selection) from VREF.CTRLA register
 pub const V055: u8 = 0x0; // VREF_DAC0REFSEL_0V55_gc - bits 2:0 = 0x0
 pub const V05: u8 = V055; // Alias for 0.55V
@@ -32,15 +28,16 @@ pub const V25: u8 = 0x2; // VREF_DAC0REFSEL_2V5_gc  - bits 2:0 = 0x2
 pub const V43: u8 = 0x3; // VREF_DAC0REFSEL_4V34_gc - bits 2:0 = 0x3
 pub const V15: u8 = 0x4; // VREF_DAC0REFSEL_1V5_gc  - bits 2:0 = 0x4
 
+// Bit masks for VREF.CTRLA register
+const VREF_DAC0REFSEL_gm: u8 = 0b00000111; // DAC reference bits 2:0
+const VREF_ADC0REFSEL_gm: u8 = 0b01110000; // ADC reference bits 6:4
+
 // DAC Vref setting function
 pub fn mcu_set_dac_vref(x: u8) void {
-    const cleared = DAC_VREF & ~DAC0REFSEL_MASK;
-    DAC_VREF = cleared | (x & DAC0REFSEL_MASK);
+    DAC_VREF = x | (DAC_VREF & ~VREF_DAC0REFSEL_gm);
 }
 
 // ADC Vref setting function
 pub fn mcu_set_adc0_vref(x: u8) void {
-    const new_bits = (x & 0x7) << 4;
-    const cleared = DAC_VREF & ~ADC0REFSEL_MASK;
-    DAC_VREF = cleared | new_bits;
+    DAC_VREF = x | (DAC_VREF & ~VREF_ADC0REFSEL_gm);
 }
