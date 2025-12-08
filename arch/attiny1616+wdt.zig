@@ -1,3 +1,4 @@
+const core = @import("attiny1616+core.zig");
 /// Rough interface to the underlying register structure. Packed because what is assigned here is directly written.
 const RealTimeCounter = packed struct {
     CTRLA: u8, // 0x00
@@ -48,4 +49,26 @@ pub inline fn stop() void {
 
 pub inline fn vect_clear() void {
     RealTimeCounter.PITINTFLAGS = RTC_PI_BM;
+}
+
+// TODO: Verify all of this for real uncertain
+
+const WDT_PERIOD_gm: u8 = 0x0F; // Mask for period bits
+const WDT_CTRLA: *volatile u8 = @ptrFromInt(0x0100); // Check your device header
+const CCP_IOREG_gc: u8 = 0xD8;
+
+pub inline fn wdt_disable() void {
+    var temp: u8 = undefined;
+    asm volatile (
+        \\  wdr
+        \\  out %i[ccp_reg], %[ioreg_cen_mask]
+        \\  lds %[tmp], %[wdt_reg]
+        \\  cbr %[tmp], %[timeout_mask]
+        \\  sts %[wdt_reg], %[tmp]
+        : [tmp] "=d" (temp),
+        : [ccp_reg] "n" (&core.CCP),
+          [ioreg_cen_mask] "r" (@as(u8, CCP_IOREG_gc)),
+          [wdt_reg] "n" (&WDT_CTRLA),
+          [timeout_mask] "I" (WDT_PERIOD_gm),
+        : .{ .memory = true });
 }
