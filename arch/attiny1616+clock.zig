@@ -24,6 +24,19 @@ pub const CLKCTRL_PDIV_64X_GC: u8 = 0x5 << 1;
 // PEN bit mask (bit 0 of MCLKCTRLB)
 pub const CLKCTRL_PRESCALE_ENABLE_BITMASK: u8 = 0x1; // Bit 0 - Prescaler Enable
 
+// Configuration Change Protection (CCP) register
+// CCP I/O address for AVR XMEGA3 (see datasheet section 10.3.5)
+const CCP_ADDRESS: u8 = 0x34; // CCP register I/O address
+const CCP_IOREG_gc: u8 = 0xD8; // Signature for protected I/O register access
+
+// CLKCTRL peripheral base address and register offsets (from datasheet section 10.4)
+const CLKCTRL_BASE: u16 = 0x0060;
+const CLKCTRL_MCLKCTRLB_ADDRESS: u16 = CLKCTRL_BASE + 0x01; // 0x0061
+const CLKCTRL_MCLKSTATUS_ADDRESS: u16 = CLKCTRL_BASE + 0x03; // 0x0063
+
+// MCLKSTATUS register bit masks (datasheet section 10.5.3)
+const CLKCTRL_SOSC_bm: u8 = 0x01; // System Oscillator Changing (bit 0)
+
 // Clock divider enum using named constants
 // Example: clock_div_4 = 0b00000101 = PDIV_8X (0x2<<1) | PEN (0x1)
 //          This divides 20MHz by 8 = 2.5MHz, then by prescaler setting = final clock
@@ -39,8 +52,63 @@ pub const Divider = enum(u8) {
     clock_div_256 = CLKCTRL_PDIV_64X_GC | CLKCTRL_PRESCALE_ENABLE_BITMASK, // 312 kHz
 };
 
-//clock dividers
-pub fn set_prescale(scale: u8) void {}
+/// Protected write for AVR XMEGA3 devices
+/// This implements the _PROTECTED_WRITE macro which:
+/// 1. Writes signature (0xD8) to CCP register (I/O space)
+/// 2. Within 4 CPU cycles, writes value to the protected register (memory space)
+/// See datasheet section 10.3.5 "Configuration Change Protection"
+inline fn protected_write(comptime reg_addr: u16, value: u8) void {
+    asm volatile (
+        \\  out %[ccp], %[signature]
+        \\  sts %[reg], %[val]
+        :
+        : [ccp] "n" (CCP_ADDRESS),
+          [signature] "d" (CCP_IOREG_gc),
+          [reg] "n" (reg_addr),
+          [val] "r" (value),
+    );
+}
 
-// Initializes the clock speed
-pub fn setup_speed() void {}
+///Disable interrupts (cli instruction)
+inline fn cli() void {
+    asm volatile ("cli");
+}
+
+///Enable interrupts (sei instruction)
+inline fn sei() void {
+    asm volatile ("sei");
+}
+
+///Read a memory-mapped register
+inline fn read_register(comptime addr: u16) u8 {
+    const ptr = @as(*volatile u8, @ptrFromInt(addr));
+    return ptr.*;
+}
+
+/// The prescaler divides the main clock frequency:
+/// - Pass one of the Divider enum values for standard divisions
+/// - Or construct manually: PDIV value (bits 4:1) | PEN enable bit (bit 0)
+pub fn set_prescale(scale: u8) void {
+    cli(); // Disable interrupts during clock change
+
+    // Write to protected MCLKCTRLB register
+    // This requires the CCP unlock sequence (handled by protected_write)
+    protected_write(CLKCTRL_MCLKCTRLB_ADDRESS, scale);
+
+    // Wait for clock change to complete
+    // Poll MCLKSTATUS.SOSC bit until it clears
+    while ((read_register(CLKCTRL_MCLKSTATUS_ADDRESS) & CLKCTRL_SOSC_bm) != 0) {}
+
+    sei(); // Re-enable interrupts
+}
+
+/// Initializes the clock speed to 10 MHz
+/// Sets up the system clock to run at 10 MHz instead of the default 3.33 MHz
+/// divides the 20 MHz internal oscillator by 2
+/// C equivalent: mcu_clock_speed()
+pub fn setup_speed() void {
+    // Set clock to 10 MHz: 20 MHz / 2
+    // PDIV[3:0] = 0x0 (divide by 2) in bits 4:1
+    // PEN = 1 (enable prescaler) in bit 0
+    protected_write(CLKCTRL_MCLKCTRLB_ADDRESS, CLKCTRL_PDIV_2X_GC | CLKCTRL_PRESCALE_ENABLE_BITMASK);
+}
