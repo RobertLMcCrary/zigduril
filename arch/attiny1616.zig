@@ -8,6 +8,7 @@ const F_CPU = 10000000;
 const BOGOMIPS = F_CPU / 4350;
 const DELAY_ZERO_TIME = 1020;
 
+/// Rough interface to the underlying register structure. Packed because what is assigned here is directly written.
 const AnalogToDigital = packed struct {
     CTRLA: u8, // 0x00
     CTRLB: u8, // 0x01
@@ -30,6 +31,7 @@ const AnalogToDigital = packed struct {
     CALIB: u8, // 0x16
 };
 
+/// Rough interface to the underlying register structure. Packed because what is assigned here is directly written.
 const RealTimeCounter = packed struct {
     CTRLA: u8, // 0x00
     STATUS: u8, // 0x01
