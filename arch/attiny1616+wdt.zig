@@ -34,10 +34,11 @@ pub inline fn standby() void {
     RealTimeCounter.PITINTCTRL = RTC_PI_BM;
     while (RealTimeCounter.PITSTATUS > 0) {}
 
-    // Period = (1<<6)
+    const period = (1 << 6);
+
     // Assuming (STANDBY_TICK_SPEED << 3) aligns with PERIOD mask.
     // Set period (64 Hz / STANDBY_TICK_SPEED = 8 Hz), enable the PI Timer
-    RealTimeCounter.PITCTRLA = (1 << 6) | (STANDBY_TICK_SPEED << 3) | RTC_PITEN_BM;
+    RealTimeCounter.PITCTRLA = period | (STANDBY_TICK_SPEED << 3) | RTC_PITEN_BM;
 }
 
 pub inline fn stop() void {
