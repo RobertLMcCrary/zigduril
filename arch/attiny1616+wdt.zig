@@ -57,7 +57,7 @@ const WDT_PERIOD_gm: u8 = 0x0F; // Mask for period bits
 const WDT_CTRLA: *volatile u8 = @ptrFromInt(0x0100); // Check your device header
 const CCP_IOREG_gc: u8 = 0xD8;
 
-pub inline fn wdt_disable() void {
+pub inline fn disable() void {
     var temp: u8 = undefined;
     asm volatile (
         \\  wdr

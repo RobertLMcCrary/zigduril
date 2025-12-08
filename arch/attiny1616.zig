@@ -37,8 +37,8 @@ pub fn switch_vect_clear() void {}
 pub fn pcint_on() void {}
 pub fn pcint_off() void {}
 
-//misc
 pub fn reboot() void {}
+
 pub fn prevent_reboot_loop() void {
     // prevent WDT from rebooting MCU again
     RSTCTRL_RSTFR &= ~(RSTCTRL_WDRF_BITMASK); // reset status flag
