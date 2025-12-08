@@ -11,11 +11,6 @@ const DELAY_ZERO_TIME = 1020;
 const RSTCTRL_RSTFR = 0x0040;
 const RSTCTRL_WDRF_BITMASK = 0x08;
 
-//ADC voltage / temperature
-pub fn set_admux_therm() void {}
-
-pub fn set_admux_voltage() void {}
-
 pub fn vdd_raw2cooked(measurement: u16) u8 {
     _ = measurement; // autofix
 }

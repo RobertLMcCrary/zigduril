@@ -127,3 +127,33 @@ inline fn set_admux_therm() void {
     AnalogToDigital.CTRLB = SAMPNUM_ACC4_GROUP_CONFIGURATION; // 10-bit result + 4x oversampling
     AnalogToDigital.CTRLC = SAMPCAP_BITMASK | PRESC_DIV16_GROUP_CONFIGURATION | REFSEL_INTREF_GROUP_CONFIGURATION; // Internal ADC reference
 }
+
+inline fn set_admux_voltage() void {
+    // Enabled, free-running (aka, auto-retrigger), run in standby
+    AnalogToDigital.CTRLA = ENABLE_BITMASK | FREERUN_BITMASK | RUNSTBY_BITMASK;
+    // set a INITDLY value because the AVR manual says so (section 30.3.5)
+    // (delay 1st reading until Vref is stable)
+    AnalogToDigital.CTRLD |= INITDLY_DLY16_GROUP_CONFIGURATION;
+
+    // Assuming USE_VOLTAGE_DIVIDER is not defined (measuring VDD pin)
+    // result = resolution * 1.5V / Vbat
+    vref.set_adc0(VREF_ADC0REFSEL._1V5_gc); // Set Vbg ref to 1.5V
+    AnalogToDigital.MUXPOS = MUXPOS_INTREF_GROUP_CONFIGURATION; // read internal reference
+    AnalogToDigital.CTRLB = SAMPNUM_ACC4_GROUP_CONFIGURATION; // 12-bit result, 4x oversampling
+    AnalogToDigital.CTRLC = SAMPCAP_BITMASK | PRESC_DIV16_GROUP_CONFIGURATION | REFSEL_VDDREF_GROUP_CONFIGURATION; // Vdd (Vcc) be ADC reference
+}
+
+inline fn set_admux_voltage_divider() void {
+    // Enabled, free-running (aka, auto-retrigger), run in standby
+    AnalogToDigital.CTRLA = ENABLE_BITMASK | FREERUN_BITMASK | RUNSTBY_BITMASK;
+    // set a INITDLY value because the AVR manual says so (section 30.3.5)
+    // (delay 1st reading until Vref is stable)
+    AnalogToDigital.CTRLD |= INITDLY_DLY16_GROUP_CONFIGURATION;
+
+    // measure an arbitrary pin
+    // result = resolution * Vdiv / 1.1V
+    vref.set_adc0(VREF_ADC0REFSEL._1V1_gc); // Set Vbg ref to 1.1V
+    AnalogToDigital.MUXPOS = MUXPOS_AIN0_GROUP_CONFIGURATION; // read the requested ADC pin (adjust as needed)
+    AnalogToDigital.CTRLB = SAMPNUM_ACC4_GROUP_CONFIGURATION; // 12-bit result, 4x oversampling
+    AnalogToDigital.CTRLC = SAMPCAP_BITMASK | PRESC_DIV16_GROUP_CONFIGURATION | REFSEL_INTREF_GROUP_CONFIGURATION; // Use internal ADC reference
+}
