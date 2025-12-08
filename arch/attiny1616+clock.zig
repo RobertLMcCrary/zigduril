@@ -69,13 +69,11 @@ inline fn protected_write(comptime reg_addr: u16, value: u8) void {
     );
 }
 
-///Disable interrupts (cli instruction)
-inline fn cli() void {
+inline fn disable_interrupts() void {
     asm volatile ("cli");
 }
 
-///Enable interrupts (sei instruction)
-inline fn sei() void {
+inline fn enable_interrupts() void {
     asm volatile ("sei");
 }
 
@@ -89,7 +87,7 @@ inline fn read_register(comptime addr: u16) u8 {
 /// - Pass one of the Divider enum values for standard divisions
 /// - Or construct manually: PDIV value (bits 4:1) | PEN enable bit (bit 0)
 pub fn set_prescale(scale: u8) void {
-    cli(); // Disable interrupts during clock change
+    disable_interrupts(); // Disable interrupts during clock change
 
     // Write to protected MCLKCTRLB register
     // This requires the CCP unlock sequence (handled by protected_write)
@@ -99,7 +97,7 @@ pub fn set_prescale(scale: u8) void {
     // Poll MCLKSTATUS.SOSC bit until it clears
     while ((read_register(CLKCTRL_MCLKSTATUS_ADDRESS) & CLKCTRL_SOSC_bm) != 0) {}
 
-    sei(); // Re-enable interrupts
+    enable_interrupts(); // Re-enable
 }
 
 /// Initializes the clock speed to 10 MHz
