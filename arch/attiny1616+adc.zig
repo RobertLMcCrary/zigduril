@@ -15,10 +15,19 @@ const AnalogToDigital = packed struct {
     DBGCTRL: u8, // 0x0C
     TEMP: u8, // 0x0D
     _reserved2: [2]u8,
-    RES: u16, // 0x10 (16-bit access)
-    WINLT: u16, // 0x12
-    WINHT: u16, // 0x14
+    RES: Register16, // 0x10 (16-bit access)
+    WINLT: Register16, // 0x12
+    WINHT: Register16, // 0x14
     CALIB: u8, // 0x16
+    _reserved3: [1]u8,
+};
+
+const Register16 = union(enum) {
+    value: u16,
+    bytes: packed struct {
+        lo: u8,
+        hi: u8,
+    },
 };
 
 // --- CTRLA (Control A) ---
