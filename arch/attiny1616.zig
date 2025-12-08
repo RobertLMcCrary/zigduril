@@ -51,45 +51,45 @@ const RealTimeCounter = packed struct {
     PITINTFLAGS: u8, // 0x13
 };
 
-pub fn mcu_clock_speed() void {}
+pub fn clock_speed() void {}
 
 //ADC voltage / temperature
-pub fn mcu_set_admux_therm() void {}
+pub fn set_admux_therm() void {}
 
-pub fn mcu_set_admux_voltage() void {}
+pub fn set_admux_voltage() void {}
 
-pub fn mcu_adc_sleep_mode() void {}
+pub fn adc_sleep_mode() void {}
 
-pub fn mcu_adc_start_measurement() void {}
+pub fn adc_start_measurement() void {}
 
-pub fn mcu_adc_off() void {}
+pub fn adc_off() void {}
 
-pub fn mcu_adc_vect_clear() void {}
+pub fn adc_vect_clear() void {}
 
-pub fn mcu_adc_result_temp() u16 {}
+pub fn adc_result_temp() u16 {}
 
-pub fn mcu_adc_result_volts() u16 {}
+pub fn adc_result_volts() u16 {}
 
-pub fn mcu_vdd_raw2cooked(measurement: u16) u8 {}
+pub fn vdd_raw2cooked(measurement: u16) u8 {}
 
-pub fn mcu_vdd_raw2fine(measurement: u16) u16 {}
+pub fn vdd_raw2fine(measurement: u16) u16 {}
 
-pub fn mcu_vdivider_raw2cooked(measurement: u16) u8 {}
+pub fn vdivider_raw2cooked(measurement: u16) u8 {}
 
-pub fn mcu_temp_raw2cooked(measurement: u16) u16 {}
+pub fn temp_raw2cooked(measurement: u16) u16 {}
 
-pub fn mcu_adc_lsb() u8 {}
+pub fn adc_lsb() u8 {}
 
 //WDT
-pub fn mcu_wdt_active() void {}
-pub fn mcu_wdt_standby() void {}
-pub fn mcu_wdt_stop() void {}
-pub fn mcu_wdt_vect_clear() void {}
+pub fn wdt_active() void {}
+pub fn wdt_standby() void {}
+pub fn wdt_stop() void {}
+pub fn wdt_vect_clear() void {}
 
 //PCINT - pin change interrupt
-pub fn mcu_switch_vect_clear() void {}
-pub fn mcu_pcint_on() void {}
-pub fn mcu_pcint_off() void {}
+pub fn switch_vect_clear() void {}
+pub fn pcint_on() void {}
+pub fn pcint_off() void {}
 
 //misc
 pub fn reboot() void {}
