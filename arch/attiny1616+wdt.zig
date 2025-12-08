@@ -18,8 +18,33 @@ const RealTimeCounter = packed struct {
     PITINTFLAGS: u8, // 0x13
 };
 
+const RTC_PITEN_BM: u8 = (1 << 0);
+const RTC_PI_BM: u8 = (1 << 0);
+const STANDBY_TICK_SPEED: u8 = 3; // Every .128s
+const RTC_PERIOD_CYC512_GC: u8 = (0x09 << 3); // Example period config
+
 // Watchdog Timer methods
-pub fn active() void {}
-pub fn standby() void {}
-pub fn stop() void {}
-pub fn vect_clear() void {}
+pub inline fn active() void {
+    RealTimeCounter.PITINTCTRL = RTC_PI_BM;
+    while (RealTimeCounter.PITSTATUS > 0) {} // Wait for synchronization
+    RealTimeCounter.PITCTRLA = RTC_PERIOD_CYC512_GC | RTC_PITEN_BM;
+}
+
+pub inline fn standby() void {
+    RealTimeCounter.PITINTCTRL = RTC_PI_BM;
+    while (RealTimeCounter.PITSTATUS > 0) {}
+
+    // Period = (1<<6)
+    // Assuming (STANDBY_TICK_SPEED << 3) aligns with PERIOD mask.
+    // Set period (64 Hz / STANDBY_TICK_SPEED = 8 Hz), enable the PI Timer
+    RealTimeCounter.PITCTRLA = (1 << 6) | (STANDBY_TICK_SPEED << 3) | RTC_PITEN_BM;
+}
+
+pub inline fn stop() void {
+    while (RealTimeCounter.PITSTATUS > 0) {}
+    RealTimeCounter.PITCTRLA = 0;
+}
+
+pub inline fn vect_clear() void {
+    RealTimeCounter.PITINTFLAGS = RTC_PI_BM;
+}
