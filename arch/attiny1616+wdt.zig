@@ -26,7 +26,7 @@ const RTC_PERIOD_CYC512_GC: u8 = (0x09 << 3); // Example period config
 // Watchdog Timer methods
 pub inline fn active() void {
     RealTimeCounter.PITINTCTRL = RTC_PI_BM;
-    while (RealTimeCounter.PITSTATUS > 0) {} // Wait for synchronization
+    while (RealTimeCounter.PITSTATUS > 0) {} // Poll to wait for synchronization
     RealTimeCounter.PITCTRLA = RTC_PERIOD_CYC512_GC | RTC_PITEN_BM;
 }
 

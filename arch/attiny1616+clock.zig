@@ -37,21 +37,21 @@ const CLKCTRL_MCLKCTRLB_ADDRESS: u16 = CLKCTRL_BASE + 0x01; // 0x0061
 const CLKCTRL_MCLKSTATUS_ADDRESS: u16 = CLKCTRL_BASE + 0x03; // 0x0063
 
 // MCLKSTATUS register bit masks (datasheet section 10.5.3)
-const CLKCTRL_SOSC_bm: u8 = 0x01; // System Oscillator Changing (bit 0)
+const CLKCTRL_SOSC_BITMASK: u8 = 0x01; // System Oscillator Changing (bit 0)
 
 // Clock divider enum using named constants
 // Example: clock_div_4 = 0b00000101 = PDIV_8X (0x2<<1) | PEN (0x1)
 //          This divides 20MHz by 8 = 2.5MHz, then by prescaler setting = final clock
 pub const Divider = enum(u8) {
-    clock_div_1 = CLKCTRL_PDIV.@"2X" | CLKCTRL_PRESCALE_ENABLE_BITMASK, // 10 MHz
-    clock_div_2 = CLKCTRL_PDIV.@"4X" | CLKCTRL_PRESCALE_ENABLE_BITMASK, // 5 MHz
-    clock_div_4 = CLKCTRL_PDIV.@"8X" | CLKCTRL_PRESCALE_ENABLE_BITMASK, // 2.5 MHz
-    clock_div_8 = CLKCTRL_PDIV.@"6X" | CLKCTRL_PRESCALE_ENABLE_BITMASK, // 1.25 MHz
-    clock_div_16 = CLKCTRL_PDIV.@"2X" | CLKCTRL_PRESCALE_ENABLE_BITMASK, // 625 kHz
-    clock_div_32 = CLKCTRL_PDIV.@"4X" | CLKCTRL_PRESCALE_ENABLE_BITMASK, // 312 kHz
-    clock_div_64 = CLKCTRL_PDIV.@"4X" | CLKCTRL_PRESCALE_ENABLE_BITMASK, // 312 kHz
-    clock_div_128 = CLKCTRL_PDIV.@"4X" | CLKCTRL_PRESCALE_ENABLE_BITMASK, // 312 kHz
-    clock_div_256 = CLKCTRL_PDIV.@"4X" | CLKCTRL_PRESCALE_ENABLE_BITMASK, // 312 kHz
+    Standard_1 = CLKCTRL_PDIV.@"2X" | CLKCTRL_PRESCALE_ENABLE_BITMASK, // 10 MHz
+    Standard_2 = CLKCTRL_PDIV.@"4X" | CLKCTRL_PRESCALE_ENABLE_BITMASK, // 5 MHz
+    Standard_4 = CLKCTRL_PDIV.@"8X" | CLKCTRL_PRESCALE_ENABLE_BITMASK, // 2.5 MHz
+    Standard_8 = CLKCTRL_PDIV.@"6X" | CLKCTRL_PRESCALE_ENABLE_BITMASK, // 1.25 MHz
+    Standard_16 = CLKCTRL_PDIV.@"2X" | CLKCTRL_PRESCALE_ENABLE_BITMASK, // 625 kHz
+    Standard_32 = CLKCTRL_PDIV.@"4X" | CLKCTRL_PRESCALE_ENABLE_BITMASK, // 312 kHz
+    Standard_64 = CLKCTRL_PDIV.@"4X" | CLKCTRL_PRESCALE_ENABLE_BITMASK, // 312 kHz
+    Standard_28 = CLKCTRL_PDIV.@"4X" | CLKCTRL_PRESCALE_ENABLE_BITMASK, // 312 kHz
+    Standard_56 = CLKCTRL_PDIV.@"4X" | CLKCTRL_PRESCALE_ENABLE_BITMASK, // 312 kHz
 };
 
 /// Protected write for AVR XMEGA3 devices
@@ -98,7 +98,7 @@ pub fn set_prescale(scale: u8) void {
 
     // Wait for clock change to complete
     // Poll MCLKSTATUS.SOSC bit until it clears
-    while ((read_register(CLKCTRL_MCLKSTATUS_ADDRESS) & CLKCTRL_SOSC_bm) != 0) {}
+    while ((read_register(CLKCTRL_MCLKSTATUS_ADDRESS) & CLKCTRL_SOSC_BITMASK) != 0) {}
 
     enable_interrupts(); // Re-enable
 }
