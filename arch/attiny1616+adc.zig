@@ -1,3 +1,4 @@
+const vref = @import("attiny1616+vref.zig");
 /// Rough interface to the underlying register structure. Packed because what is assigned here is directly written.
 const AnalogToDigital = packed struct {
     CTRLA: u8, // 0x00
@@ -20,6 +21,14 @@ const AnalogToDigital = packed struct {
     WINHT: Register16, // 0x14
     CALIB: u8, // 0x16
     _reserved3: [1]u8,
+};
+
+const VREF_ADC0REFSEL = enum(u8) {
+    _0V55_gc = (0x00 << 4), //  Voltage reference at 0.55V
+    _1V1_gc = (0x01 << 4), // Voltage reference at 1.1V
+    _2V5_gc = (0x02 << 4), // Voltage reference at 2.5V
+    _4V34_gc = (0x03 << 4), //  Voltage reference at 4.34V
+    _1V5_gc = (0x04 << 4), // Voltage reference at 1.5V
 };
 
 const Register16 = union(enum) {
@@ -108,4 +117,13 @@ pub fn result_volts() u16 {
 pub fn lsb() u8 {
     //return (ADCL >> 6) + (ADCH << 2);
     return AnalogToDigital.RESL; // right aligned, not left... so should be equivalent?
+}
+
+inline fn set_admux_therm() void {
+    // put the ADC in temperature mode
+    // attiny1616 datasheet section 30.3.2.6
+    vref.set_adc0(VREF_ADC0REFSEL._1V1_gc); // Set Vbg ref to 1.1V
+    AnalogToDigital.MUXPOS = MUXPOS_TEMPERATURE_SENSOR_GROUP_CONFIGURATION; // read temperature
+    AnalogToDigital.CTRLB = SAMPNUM_ACC4_GROUP_CONFIGURATION; // 10-bit result + 4x oversampling
+    AnalogToDigital.CTRLC = SAMPCAP_BITMASK | PRESC_DIV16_GROUP_CONFIGURATION | REFSEL_INTREF_GROUP_CONFIGURATION; // Internal ADC reference
 }
