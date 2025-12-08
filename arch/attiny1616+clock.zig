@@ -14,12 +14,14 @@
 // The |CLKCTRL_PEN_bm combines the PDIV value with the enable bit
 
 // PDIV field values (shifted left 1 bit to occupy bits 4:1 of MCLKCTRLB)
-pub const CLKCTRL_PDIV_2X_GC: u8 = 0x0 << 1;
-pub const CLKCTRL_PDIV_4X_GC: u8 = 0x1 << 1;
-pub const CLKCTRL_PDIV_8X_GC: u8 = 0x2 << 1;
-pub const CLKCTRL_PDIV_16X_GC: u8 = 0x3 << 1;
-pub const CLKCTRL_PDIV_32X_GC: u8 = 0x4 << 1;
-pub const CLKCTRL_PDIV_64X_GC: u8 = 0x5 << 1;
+pub const CLKCTRL_PDIV = enum(u8) {
+    @"2X" = 0x0 << 1,
+    @"4X" = 0x1 << 1,
+    @"8X" = 0x2 << 1,
+    @"16X" = 0x3 << 1,
+    @"32X" = 0x4 << 1,
+    @"64X" = 0x5 << 1,
+};
 
 // PEN bit mask (bit 0 of MCLKCTRLB)
 pub const CLKCTRL_PRESCALE_ENABLE_BITMASK: u8 = 0x1; // Bit 0 - Prescaler Enable
@@ -41,15 +43,15 @@ const CLKCTRL_SOSC_bm: u8 = 0x01; // System Oscillator Changing (bit 0)
 // Example: clock_div_4 = 0b00000101 = PDIV_8X (0x2<<1) | PEN (0x1)
 //          This divides 20MHz by 8 = 2.5MHz, then by prescaler setting = final clock
 pub const Divider = enum(u8) {
-    clock_div_1 = CLKCTRL_PDIV_2X_GC | CLKCTRL_PRESCALE_ENABLE_BITMASK, // 10 MHz
-    clock_div_2 = CLKCTRL_PDIV_4X_GC | CLKCTRL_PRESCALE_ENABLE_BITMASK, // 5 MHz
-    clock_div_4 = CLKCTRL_PDIV_8X_GC | CLKCTRL_PRESCALE_ENABLE_BITMASK, // 2.5 MHz
-    clock_div_8 = CLKCTRL_PDIV_16X_GC | CLKCTRL_PRESCALE_ENABLE_BITMASK, // 1.25 MHz
-    clock_div_16 = CLKCTRL_PDIV_32X_GC | CLKCTRL_PRESCALE_ENABLE_BITMASK, // 625 kHz
-    clock_div_32 = CLKCTRL_PDIV_64X_GC | CLKCTRL_PRESCALE_ENABLE_BITMASK, // 312 kHz
-    clock_div_64 = CLKCTRL_PDIV_64X_GC | CLKCTRL_PRESCALE_ENABLE_BITMASK, // 312 kHz
-    clock_div_128 = CLKCTRL_PDIV_64X_GC | CLKCTRL_PRESCALE_ENABLE_BITMASK, // 312 kHz
-    clock_div_256 = CLKCTRL_PDIV_64X_GC | CLKCTRL_PRESCALE_ENABLE_BITMASK, // 312 kHz
+    clock_div_1 = CLKCTRL_PDIV.@"2X" | CLKCTRL_PRESCALE_ENABLE_BITMASK, // 10 MHz
+    clock_div_2 = CLKCTRL_PDIV.@"4X" | CLKCTRL_PRESCALE_ENABLE_BITMASK, // 5 MHz
+    clock_div_4 = CLKCTRL_PDIV.@"8X" | CLKCTRL_PRESCALE_ENABLE_BITMASK, // 2.5 MHz
+    clock_div_8 = CLKCTRL_PDIV.@"6X" | CLKCTRL_PRESCALE_ENABLE_BITMASK, // 1.25 MHz
+    clock_div_16 = CLKCTRL_PDIV.@"2X" | CLKCTRL_PRESCALE_ENABLE_BITMASK, // 625 kHz
+    clock_div_32 = CLKCTRL_PDIV.@"4X" | CLKCTRL_PRESCALE_ENABLE_BITMASK, // 312 kHz
+    clock_div_64 = CLKCTRL_PDIV.@"4X" | CLKCTRL_PRESCALE_ENABLE_BITMASK, // 312 kHz
+    clock_div_128 = CLKCTRL_PDIV.@"4X" | CLKCTRL_PRESCALE_ENABLE_BITMASK, // 312 kHz
+    clock_div_256 = CLKCTRL_PDIV.@"4X" | CLKCTRL_PRESCALE_ENABLE_BITMASK, // 312 kHz
 };
 
 /// Protected write for AVR XMEGA3 devices
@@ -79,6 +81,7 @@ inline fn enable_interrupts() void {
 
 ///Read a memory-mapped register
 inline fn read_register(comptime addr: u16) u8 {
+    // Volatile to cover for possible side-effect cases
     const ptr = @as(*volatile u8, @ptrFromInt(addr));
     return ptr.*;
 }
@@ -87,7 +90,7 @@ inline fn read_register(comptime addr: u16) u8 {
 /// - Pass one of the Divider enum values for standard divisions
 /// - Or construct manually: PDIV value (bits 4:1) | PEN enable bit (bit 0)
 pub fn set_prescale(scale: u8) void {
-    disable_interrupts(); // Disable interrupts during clock change
+    disable_interrupts(); // Disable during clock change
 
     // Write to protected MCLKCTRLB register
     // This requires the CCP unlock sequence (handled by protected_write)
@@ -108,5 +111,5 @@ pub fn setup_speed() void {
     // Set clock to 10 MHz: 20 MHz / 2
     // PDIV[3:0] = 0x0 (divide by 2) in bits 4:1
     // PEN = 1 (enable prescaler) in bit 0
-    protected_write(CLKCTRL_MCLKCTRLB_ADDRESS, CLKCTRL_PDIV_2X_GC | CLKCTRL_PRESCALE_ENABLE_BITMASK);
+    protected_write(CLKCTRL_MCLKCTRLB_ADDRESS, CLKCTRL_PDIV.@"2X" | CLKCTRL_PRESCALE_ENABLE_BITMASK);
 }
