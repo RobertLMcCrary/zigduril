@@ -21,6 +21,56 @@ const AnalogToDigital = packed struct {
     CALIB: u8, // 0x16
 };
 
+// --- CTRLA (Control A) ---
+// Offset: 0x00
+pub const ENABLE_BITMASK: u8 = (1 << 0); // Enable ADC
+pub const FREERUN_BITMASK: u8 = (1 << 1); // Free-Running Mode
+pub const RESSEL_BITMASK: u8 = (1 << 2); // Resolution Selection (0=10-bit, 1=8-bit)
+pub const RUNSTBY_BITMASK: u8 = (1 << 7); // Run in Standby Mode
+
+// --- CTRLB (Control B) ---
+// Offset: 0x01
+// Sample Accumulation Number Select (SAMPNUM)
+pub const SAMPNUM_ACC4_GROUP_CONFIGURATION: u8 = 0x02; // Accumulate 4 samples
+
+// --- CTRLC (Control C) ---
+// Offset: 0x02
+// Prescaler (PRESC) - bits [2:0]
+pub const PRESC_DIV16_GROUP_CONFIGURATION: u8 = 0x03;
+
+// Reference Selection (REFSEL) - bits [5:4]
+pub const REFSEL_INTREF_GROUP_CONFIGURATION: u8 = (0x0 << 4); // Internal Reference (VREF peripheral)
+pub const REFSEL_VDDREF_GROUP_CONFIGURATION: u8 = (0x1 << 4); // VDD Reference
+pub const REFSEL_EXTREF_GROUP_CONFIGURATION: u8 = (0x2 << 4); // External Reference (VREFA pin)
+
+// Sample Capacitance Selection (SAMPCAP) - bit 6
+pub const SAMPCAP_BITMASK: u8 = (1 << 6); // Reduced sampling capacitance (required for Temp Sense)
+
+// --- CTRLD (Control D) ---
+// Offset: 0x03
+// Initialization Delay (INITDLY) - bits [7:5]
+// Defines delay before first conversion starts
+pub const INITDLY_DLY0_GROUP_CONFIGURATION: u8 = (0x0 << 5);
+pub const INITDLY_DLY16_GROUP_CONFIGURATION: u8 = (0x1 << 5);
+pub const INITDLY_DLY32_GROUP_CONFIGURATION: u8 = (0x2 << 5); // Required for Temp Sense (>= 32us)
+pub const INITDLY_DLY64_GROUP_CONFIGURATION: u8 = (0x3 << 5);
+
+// --- MUXPOS (Multiplexer Positive Input) ---
+// Offset: 0x06
+pub const MUXPOS_AIN0_GROUP_CONFIGURATION: u8 = 0x00;
+pub const MUXPOS_INTREF_GROUP_CONFIGURATION: u8 = 0x1C; // DAC/Internal Reference
+pub const MUXPOS_GND_GROUP_CONFIGURATION: u8 = 0x1D; // Ground
+pub const MUXPOS_TEMPSENSE_GROUP_CONFIGURATION: u8 = 0x1E; // Temperature Sensor
+
+// --- COMMAND (Command) ---
+// Offset: 0x08
+pub const STCONV_BITMASK: u8 = (1 << 0); // Start Conversion
+
+// --- INTFLAGS (Interrupt Flags) ---
+// Offset: 0x0B
+pub const RESRDY_BITMASK: u8 = (1 << 0); // Result Ready Flag
+pub const WCMP_BITMASK: u8 = (1 << 1); // Window Comparator Flag
+
 pub fn sleep_mode() void {}
 
 pub fn start_measurement() void {}
