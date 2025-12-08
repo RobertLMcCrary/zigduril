@@ -4,8 +4,8 @@
 //
 // MCLKCTRLB Register Layout (8 bits):
 // Bit:  7  6  5  4  3  2  1  0
-//       Reserved | PDIV[3:0] | PEN
 //                 (bits 4:1)  (bit 0)
+//       Reserved | PDIV[3:0] | PEN
 //
 // PEN (Prescaler Enable, bit 0): Must be 1 to enable the prescaler
 // PDIV (Prescaler Divider, bits 4:1): Selects the division ratio
@@ -40,4 +40,7 @@ pub const Divider = enum(u8) {
 };
 
 //clock dividers
-pub fn clock_prescale_set(n: u8) void {}
+pub fn set_prescale(scale: u8) void {}
+
+// Initializes the clock speed
+pub fn setup_speed() void {}

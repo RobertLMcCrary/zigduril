@@ -33,4 +33,4 @@ pub fn result_temp() u16 {}
 
 pub fn result_volts() u16 {}
 
-pub fn adc_lsb() u8 {}
+pub fn lsb() u8 {}

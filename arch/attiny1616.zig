@@ -8,8 +8,6 @@ const F_CPU = 10000000;
 const BOGOMIPS = F_CPU / 4350;
 const DELAY_ZERO_TIME = 1020;
 
-pub fn clock_speed() void {}
-
 //ADC voltage / temperature
 pub fn set_admux_therm() void {}
 
