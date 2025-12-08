@@ -9,29 +9,6 @@ const BOGOMIPS = F_CPU / 4350;
 const DELAY_ZERO_TIME = 1020;
 
 /// Rough interface to the underlying register structure. Packed because what is assigned here is directly written.
-const AnalogToDigital = packed struct {
-    CTRLA: u8, // 0x00
-    CTRLB: u8, // 0x01
-    CTRLC: u8, // 0x02
-    CTRLD: u8, // 0x03
-    CTRLE: u8, // 0x04
-    SAMPCTRL: u8, // 0x05
-    MUXPOS: u8, // 0x06
-    _reserved1: u8,
-    COMMAND: u8, // 0x08
-    EVCTRL: u8, // 0x09
-    INTCTRL: u8, // 0x0A
-    INTFLAGS: u8, // 0x0B
-    DBGCTRL: u8, // 0x0C
-    TEMP: u8, // 0x0D
-    _reserved2: [2]u8,
-    RES: u16, // 0x10 (16-bit access)
-    WINLT: u16, // 0x12
-    WINHT: u16, // 0x14
-    CALIB: u8, // 0x16
-};
-
-/// Rough interface to the underlying register structure. Packed because what is assigned here is directly written.
 const RealTimeCounter = packed struct {
     CTRLA: u8, // 0x00
     STATUS: u8, // 0x01
@@ -58,18 +35,6 @@ pub fn set_admux_therm() void {}
 
 pub fn set_admux_voltage() void {}
 
-pub fn adc_sleep_mode() void {}
-
-pub fn adc_start_measurement() void {}
-
-pub fn adc_off() void {}
-
-pub fn adc_vect_clear() void {}
-
-pub fn adc_result_temp() u16 {}
-
-pub fn adc_result_volts() u16 {}
-
 pub fn vdd_raw2cooked(measurement: u16) u8 {}
 
 pub fn vdd_raw2fine(measurement: u16) u16 {}
@@ -77,8 +42,6 @@ pub fn vdd_raw2fine(measurement: u16) u16 {}
 pub fn vdivider_raw2cooked(measurement: u16) u8 {}
 
 pub fn temp_raw2cooked(measurement: u16) u16 {}
-
-pub fn adc_lsb() u8 {}
 
 //WDT
 pub fn wdt_active() void {}
