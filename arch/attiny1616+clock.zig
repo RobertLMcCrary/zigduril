@@ -1,3 +1,5 @@
+const core = @import("attiny1616+core.zig");
+
 // The ATtiny1616 main clock is controlled via the MCLKCTRLB register.
 // After reset, the device runs at 20MHz (or 16MHz depending on fuses),
 // divided by 6 to give ~3.3MHz (or 2.66MHz).
@@ -26,11 +28,6 @@ pub const CLKCTRL_PDIV = enum(u8) {
 // PEN bit mask (bit 0 of MCLKCTRLB)
 pub const CLKCTRL_PRESCALE_ENABLE_BITMASK: u8 = 0x1; // Bit 0 - Prescaler Enable
 
-// Configuration Change Protection (CCP) register
-// CCP I/O address for AVR XMEGA3 (see datasheet section 10.3.5)
-const CCP_ADDRESS: u8 = 0x34; // CCP register I/O address
-const CCP_IOREG_gc: u8 = 0xD8; // Signature for protected I/O register access
-
 // CLKCTRL peripheral base address and register offsets (from datasheet section 10.4)
 const CLKCTRL_BASE: u16 = 0x0060;
 const CLKCTRL_MCLKCTRLB_ADDRESS: u16 = CLKCTRL_BASE + 0x01; // 0x0061
@@ -54,31 +51,6 @@ pub const Divider = enum(u8) {
     Standard_56 = CLKCTRL_PDIV.@"4X" | CLKCTRL_PRESCALE_ENABLE_BITMASK, // 312 kHz
 };
 
-/// Protected write for AVR XMEGA3 devices
-/// This implements the _PROTECTED_WRITE macro which:
-/// 1. Writes signature (0xD8) to CCP register (I/O space)
-/// 2. Within 4 CPU cycles, writes value to the protected register (memory space)
-/// See datasheet section 10.3.5 "Configuration Change Protection"
-inline fn protected_write(comptime reg_addr: u16, value: u8) void {
-    asm volatile (
-        \\  out %i[ccp], %[signature]
-        \\  sts %[reg], %[val]
-        :
-        : [ccp] "n" (&CCP_ADDRESS),
-          [signature] "d" (CCP_IOREG_gc),
-          [reg] "n" (reg_addr),
-          [val] "r" (value),
-    );
-}
-
-inline fn disable_interrupts() void {
-    asm volatile ("cli");
-}
-
-inline fn enable_interrupts() void {
-    asm volatile ("sei");
-}
-
 ///Read a memory-mapped register
 inline fn read_register(comptime addr: u16) u8 {
     // Volatile to cover for possible side-effect cases
@@ -90,17 +62,17 @@ inline fn read_register(comptime addr: u16) u8 {
 /// - Pass one of the Divider enum values for standard divisions
 /// - Or construct manually: PDIV value (bits 4:1) | PEN enable bit (bit 0)
 pub fn set_prescale(scale: u8) void {
-    disable_interrupts(); // Disable during clock change
+    core.disable_interrupts(); // Disable during clock change
 
     // Write to protected MCLKCTRLB register
     // This requires the CCP unlock sequence (handled by protected_write)
-    protected_write(CLKCTRL_MCLKCTRLB_ADDRESS, scale);
+    core.protected_write(CLKCTRL_MCLKCTRLB_ADDRESS, scale);
 
     // Wait for clock change to complete
     // Poll MCLKSTATUS.SOSC bit until it clears
     while ((read_register(CLKCTRL_MCLKSTATUS_ADDRESS) & CLKCTRL_SOSC_BITMASK) != 0) {}
 
-    enable_interrupts(); // Re-enable
+    core.enable_interrupts(); // Re-enable
 }
 
 /// Initializes the clock speed to 10 MHz
@@ -111,5 +83,5 @@ pub fn setup_speed() void {
     // Set clock to 10 MHz: 20 MHz / 2
     // PDIV[3:0] = 0x0 (divide by 2) in bits 4:1
     // PEN = 1 (enable prescaler) in bit 0
-    protected_write(CLKCTRL_MCLKCTRLB_ADDRESS, CLKCTRL_PDIV.@"2X" | CLKCTRL_PRESCALE_ENABLE_BITMASK);
+    core.protected_write(CLKCTRL_MCLKCTRLB_ADDRESS, CLKCTRL_PDIV.@"2X" | CLKCTRL_PRESCALE_ENABLE_BITMASK);
 }
