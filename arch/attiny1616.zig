@@ -8,12 +8,6 @@ const F_CPU = 10000000;
 const BOGOMIPS = F_CPU / 4350;
 const DELAY_ZERO_TIME = 1020;
 
-// DAC Vref setting function
-pub fn mcu_set_dac_vref(x: u8) void {}
-
-// ADC Vref setting function
-pub fn mcu_set_adc0_vref(x: u8) void {}
-
 pub fn mcu_clock_speed() void {}
 
 //ADC voltage / temperature

@@ -27,3 +27,9 @@ pub const V11: u8 = 0x1; // VREF_DAC0REFSEL_1V1_gc  - bits 2:0 = 0x1
 pub const V25: u8 = 0x2; // VREF_DAC0REFSEL_2V5_gc  - bits 2:0 = 0x2
 pub const V43: u8 = 0x3; // VREF_DAC0REFSEL_4V34_gc - bits 2:0 = 0x3
 pub const V15: u8 = 0x4; // VREF_DAC0REFSEL_1V5_gc  - bits 2:0 = 0x4
+
+// DAC Vref setting function
+pub fn mcu_set_dac_vref(x: u8) void {}
+
+// ADC Vref setting function
+pub fn mcu_set_adc0_vref(x: u8) void {}
