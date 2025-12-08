@@ -33,11 +33,11 @@ const VREF_DAC0REFSEL_gm: u8 = 0b00000111; // DAC reference bits 2:0
 const VREF_ADC0REFSEL_gm: u8 = 0b01110000; // ADC reference bits 6:4
 
 // DAC Vref setting function
-pub fn mcu_set_dac_vref(x: u8) void {
+pub fn set_dac(x: u8) void {
     DAC_VREF = x | (DAC_VREF & ~VREF_DAC0REFSEL_gm);
 }
 
 // ADC Vref setting function
-pub fn mcu_set_adc0_vref(x: u8) void {
+pub fn set_adc0(x: u8) void {
     DAC_VREF = x | (DAC_VREF & ~VREF_ADC0REFSEL_gm);
 }
