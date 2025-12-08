@@ -59,8 +59,8 @@ pub const INITDLY_DLY64_GROUP_CONFIGURATION: u8 = (0x3 << 5);
 // Offset: 0x06
 pub const MUXPOS_AIN0_GROUP_CONFIGURATION: u8 = 0x00;
 pub const MUXPOS_INTREF_GROUP_CONFIGURATION: u8 = 0x1C; // DAC/Internal Reference
-pub const MUXPOS_GND_GROUP_CONFIGURATION: u8 = 0x1D; // Ground
-pub const MUXPOS_TEMPSENSE_GROUP_CONFIGURATION: u8 = 0x1E; // Temperature Sensor
+pub const MUXPOS_GROUND_GROUP_CONFIGURATION: u8 = 0x1D; // Ground
+pub const MUXPOS_TEMPERATURE_SENSOR_GROUP_CONFIGURATION: u8 = 0x1E; // Temperature Sensor
 
 // --- COMMAND (Command) ---
 // Offset: 0x08
