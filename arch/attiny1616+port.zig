@@ -1,0 +1,31 @@
+const Port = packed struct {
+    DIR: u8,
+    DIRSET: u8,
+    DIRCLR: u8,
+    DIRTGL: u8,
+    OUT: u8,
+    OUTSET: u8,
+    OUTCLR: u8,
+    OUTTGL: u8,
+    IN: u8,
+    INTFLAGS: u8,
+    _reserved1: [6]u8,
+    PIN0CTRL: u8,
+    PIN1CTRL: u8,
+    PIN2CTRL: u8,
+    PIN3CTRL: u8,
+    PIN4CTRL: u8,
+    PIN5CTRL: u8,
+    PIN6CTRL: u8,
+    PIN7CTRL: u8,
+    _reserved2: [8]u8,
+};
+
+pub const Isc = enum(u8) {
+    int_disable = (0x00 << 0),
+    both_edges = (0x01 << 0),
+    rising_edge = (0x02 << 0),
+    falling_edge = (0x03 << 0),
+    input_disable = (0x04 << 0),
+    level = (0x05 << 0),
+};
