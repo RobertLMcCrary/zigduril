@@ -107,3 +107,10 @@ pub inline fn disable() void {
           [timeout_mask] "I" (WDT_PERIOD_gm),
         : .{ .memory = true });
 }
+
+// Reset the watchdog timer.  When the watchdog timer is enabled,
+// a call to this instruction is required before the timer expires,
+// otherwise a watchdog-initiated device reset will occur.
+inline fn reset() void {
+    asm volatile ("wdr");
+}
