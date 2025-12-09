@@ -1,6 +1,7 @@
 const std = @import("std");
 
 const clock = @import("attiny1616+clock.zig");
+const core = @import("attiny1616+core.zig");
 const vref = @import("attiny1616+vref.zig");
 const wdt = @import("attiny1616+wdt.zig");
 
@@ -32,7 +33,15 @@ pub fn switch_vect_clear() void {}
 pub fn pcint_on() void {}
 pub fn pcint_off() void {}
 
-pub fn reboot() void {}
+pub fn reboot() void {
+    // put the WDT in hard reset mode, then trigger it
+    core.cli();
+    // Enable, timeout 8ms
+    core.protected_write(wdt.WatchDogTimer.CTRLA, wdt.Period._8_cycles);
+    core.sei();
+    wdt_reset();
+    while (1) {}
+}
 
 pub fn prevent_reboot_loop() void {
     // prevent WDT from rebooting MCU again

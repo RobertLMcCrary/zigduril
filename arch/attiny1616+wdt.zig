@@ -19,6 +19,41 @@ const RealTimeCounter = packed struct {
     PITINTFLAGS: u8, // 0x13
 };
 
+const WatchDogTimer = packed struct {
+    CTRLA: u8,
+    STATUS: u8,
+};
+
+pub const Period = enum(u8) {
+    off = (0x00 << 0),
+    _8_cycles = (0x01 << 0),
+    _16_cycles = (0x02 << 0),
+    _32_cycles = (0x03 << 0),
+    _64_cycles = (0x04 << 0),
+    _128_cycles = (0x05 << 0),
+    _256_cycles = (0x06 << 0),
+    _512_cycles = (0x07 << 0),
+    _1k_cycles = (0x08 << 0),
+    _2k_cycles = (0x09 << 0),
+    _4k_cycles = (0x0A << 0),
+    _8k_cycles = (0x0B << 0),
+};
+
+pub const Window = enum(u8) {
+    off = (0x00 << 4),
+    _8_cycles = (0x01 << 4),
+    _16_cycles = (0x02 << 4),
+    _32_cycles = (0x03 << 4),
+    _64_cycles = (0x04 << 4),
+    _128_cycles = (0x05 << 4),
+    _256_cycles = (0x06 << 4),
+    _512_cycles = (0x07 << 4),
+    _1k_cycles = (0x08 << 4),
+    _2k_cycles = (0x09 << 4),
+    _4k_cycles = (0x0A << 4),
+    _8k_cycles = (0x0B << 4),
+};
+
 const RTC_PITEN_BM: u8 = (1 << 0);
 const RTC_PI_BM: u8 = (1 << 0);
 const STANDBY_TICK_SPEED: u8 = 3; // Every .128s
