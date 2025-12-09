@@ -51,13 +51,19 @@ pub fn pcint_off() void {
     SWITCH_ISC_REG &= ~(PORT_ISC_gm);
 }
 
+// TODO: I don't understand this logic?
 pub fn reboot() void {
     // put the WDT in hard reset mode, then trigger it
-    core.cli();
+
+    core.disable_interrupts();
+
     // Enable, timeout 8ms
     core.protected_write(wdt.WatchDogTimer.CTRLA, wdt.Period._8_cycles);
-    core.sei();
-    wdt_reset();
+    core.enable_interrupts();
+
+    wdt.reset();
+
+    // Deadlock the system until off?
     while (1) {}
 }
 
